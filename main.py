@@ -2,7 +2,7 @@ from tkinter import *
 import os
 from mutagen.mp3 import MP3
 import pygame
-from multiprocessing import Process
+from tkinter import filedialog
 
 root = Tk()
 
@@ -20,9 +20,27 @@ for item in listDir:
 print(musics)
 soundObj = None
 currentMusicIndex = 0
+selectedFolder = "D:/Coding/Python/Music Player GUI"
 volumeVar = DoubleVar()
 volumeVar.set(100.0)
 
+
+def updateMusicPlaylist():
+	newMusic = os.listdir(selectedFolder)
+	print(newMusic[0])
+	global musics
+	musics = []
+	for music in newMusic:
+		if ".mp3" in music or ".MP3" in music:
+			musics.append(music)	
+	print(musics[0])
+	initialMusic()
+
+def selectFolder():
+	global selectedFolder
+	selectedFolder = filedialog.askdirectory()
+	print(selectedFolder)
+	updateMusicPlaylist()
 
 def pauseMusic():
 	pygame.mixer.music.pause()
@@ -35,10 +53,17 @@ def resumeMusic():
 def initialMusic():
 	print("Initialization Done!")
 	global soundObj
+	global musicName
 	global currentMusicIndex
 	pygame.init()
-	soundObj =  pygame.mixer.music.load(musics[currentMusicIndex])
-initialMusic()
+	if selectedFolder:	
+		soundObj =  pygame.mixer.music.load(f"{selectedFolder}/{musics[currentMusicIndex]}")
+	else:
+		soundObj =  pygame.mixer.music.load(f"{musics[currentMusicIndex]}")
+	
+	musicName.config(text=musics[currentMusicIndex])
+
+
 
 def playMusic():
 	pygame.mixer.music.play()
@@ -101,4 +126,14 @@ volume = Scale(
 )
 volume.pack()
 
+
+mainMenu = Menu()
+
+fileMenu = Menu(mainMenu, tearoff=0)
+fileMenu.add_command(label="Open a Folder", command=selectFolder)
+
+mainMenu.add_cascade(label="File", menu=fileMenu)
+root.config(menu=mainMenu)
+
+initialMusic()
 root.mainloop()
