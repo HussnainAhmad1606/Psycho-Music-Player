@@ -46,7 +46,7 @@ def playMusic():
 def previousTrack():
 	global currentMusicIndex
 	if currentMusicIndex == 0:
-		currentMusicIndex = len(musics)
+		currentMusicIndex = len(musics) - 1
 	else:
 		currentMusicIndex -= 1
 	initialMusic()
